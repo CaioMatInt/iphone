@@ -14,7 +14,7 @@ class AchievementsController extends Controller
             'next_available_achievements' => [],
             'current_badge' => '',
             'next_badge' => '',
-            'remaing_to_unlock_next_badge' => 0
+            'remaining_to_unlock_next_badge' => 0
         ]);
     }
 }

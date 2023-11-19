@@ -66,5 +66,37 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Lesson::class)->wherePivot('watched', true);
     }
+
+    /**
+     * Count of lessons that a user has watched.
+     */
+    public function lessonProgress()
+    {
+        return $this->hasOne(UserLessonProgress::class);
+    }
+
+    /**
+     * Count of comments that a user has made.
+     */
+    public function commentProgress()
+    {
+        return $this->hasOne(UserCommentProgress::class);
+    }
+
+    /**
+     * The achievements that the user has earned.
+     */
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class);
+    }
+
+    /**
+     * The badges that the user has earned.
+     */
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class);
+    }
 }
 
