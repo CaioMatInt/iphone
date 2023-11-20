@@ -7,11 +7,14 @@ Update your env with your db password/key
 php artisan migrate:fresh
 
 Not necessary to run php artisan db:seed [1]
+
 Execute php artisan test
 
 Obs:
 [1] Ps: It's not needed to run db:seed since I'm using factories, but if youre running it:
+
 Please update this temp var to false:
+
 DatabaseSeeder -> SHOULD_ADD_TESTING_DATA = false;
 
 ## To test the endpoint:
