@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Events\CommentWritten;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,6 +18,13 @@ class Comment extends Model
     protected $fillable = [
         'body',
         'user_id'
+    ];
+
+    /**
+     * The event map for the model. Created just to be able to write more complete tests.
+     */
+    protected $dispatchesEvents = [
+        'created' => CommentWritten::class,
     ];
 
     /**

@@ -44,6 +44,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The event map for the model.
+     *
+     * @var array<string, string>
+     */
+    protected $dispatchesEvents = [
+        'created' => \App\Events\UserCreated::class,
+    ];
+
+    /**
      * The comments that belong to the user.
      */
     public function comments()
@@ -88,7 +97,7 @@ class User extends Authenticatable
      */
     public function achievements()
     {
-        return $this->belongsToMany(Achievement::class);
+        return $this->belongsToMany(Achievement::class, 'user_achievement')->withTimestamps();
     }
 
     /**
@@ -96,7 +105,7 @@ class User extends Authenticatable
      */
     public function badges()
     {
-        return $this->belongsToMany(Badge::class);
+        return $this->belongsToMany(Badge::class, 'user_badge')->withTimestamps();
     }
 }
 

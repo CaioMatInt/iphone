@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('badges', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->integer('achievement_threshold')->unique();
             $table->integer('order')->unique();
             $table->timestamps();

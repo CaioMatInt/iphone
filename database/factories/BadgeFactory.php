@@ -24,7 +24,7 @@ class BadgeFactory extends Factory
         $currentMaxOrder = Badge::max('order');
 
         return [
-            'name' => $this->faker->word,
+            'name' => $this->faker->unique()->word,
             'achievement_threshold' => $this->faker->unique()->numberBetween(0, 20),
             'order' => $currentMaxOrder ? $currentMaxOrder + 1 : 1,
             'created_at' => now(),

@@ -21,12 +21,12 @@ class AchievementFactory extends Factory
      */
     public function definition()
     {
-        $type = $this->faker->randomElement([Achievement::LESSON, Achievement::COMMENT]);
+        $type = $this->faker->randomElement([Achievement::LESSON_TYPE, Achievement::COMMENT_TYPE]);
         $maxOrderByType = Achievement::where('type', $type)->max('order');
 
         return [
-            'name' => $this->faker->word,
-            'type' => $this->faker->randomElement([Achievement::LESSON, Achievement::COMMENT]),
+            'name' => $this->faker->unique()->word,
+            'type' => $this->faker->randomElement([Achievement::LESSON_TYPE, Achievement::COMMENT_TYPE]),
             'threshold' => $this->faker->unique()->numberBetween(0, 20),
             'order' => $maxOrderByType ? $maxOrderByType + 1 : 1,
             'created_at' => now(),
