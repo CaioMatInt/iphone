@@ -124,11 +124,10 @@ class UserAchievementAndBadgeTest extends TestCase
     public function should_award_a_created_user_with_beginner_badge(): void
     {
         $user = User::factory()->create();
-        $badge = Badge::where('name', Badge::BEGINNER)->first();
 
         $this->assertDatabaseHas('user_badge', [
             'user_id' => $user->id,
-            'badge_id' => $badge->id,
+            'badge_id' => $this->beginnerBadge->id,
         ]);
     }
 
@@ -768,7 +767,7 @@ class UserAchievementAndBadgeTest extends TestCase
         }
 
         $response = $this->get("/users/{$user->id}/achievements");
-        
+
         $response->assertJson([
             'unlocked_achievements' => [
                 $this->oneCommentAchievement->name,
