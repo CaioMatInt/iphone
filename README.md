@@ -20,7 +20,9 @@ Please update this temp var to false:
 DatabaseSeeder -> SHOULD_ADD_TESTING_DATA = false;
 
 ## To test the endpoint:
-run php artisan migrate --seed to run the seeds also.
+Run php artisan migrate --seed to run the seeds with fake data.
+
+Check one user_id in your DB (You can use 1, 2 etc.).
 
 Make a GET request to: http://127.0.0.1:8000/users/{user_id}/achievements
 
