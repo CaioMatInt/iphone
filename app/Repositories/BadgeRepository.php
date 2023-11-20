@@ -22,4 +22,9 @@ class BadgeRepository
     {
         return $this->model->where('name', $name)->first();
     }
+
+    public function findNextBadgeByOrder(int $order): ?Badge
+    {
+        return $this->model->where('order', $order + 1)->first();
+    }
 }

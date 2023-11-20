@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class AchievementsController extends Controller
 {
+
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index(User $user)
     {
-        return response()->json([
-            'unlocked_achievements' => [],
-            'next_available_achievements' => [],
-            'current_badge' => '',
-            'next_badge' => '',
-            'remaining_to_unlock_next_badge' => 0
-        ]);
+        return response()->json($this->userService->getUserAchievementsOverview($user));
     }
 }
