@@ -1,37 +1,26 @@
 ## Setup
-Clone this repository
+1. Clone the repository.
+2. Execute `composer install` to install dependencies.
+3. Update your `.env` file with the appropriate database credentials and keys.
 
-Run composer install
+## Running PHPUnit Tests
+- Perform a fresh migration using `php artisan migrate:fresh` if you already run db:seed.
+- Run tests with `php artisan test`.
 
-Update your env with your db password/key
+- Note: There is no need to seed the database (`php artisan db:seed`) as factories are utilized. However, should you choose to do so, set `SHOULD_ADD_TESTING_DATA` to `false` in `DatabaseSeeder`.
 
-## To run php unit tests: 
-php artisan migrate:fresh
+## Testing the Endpoint
+- To populate the database with test data, run `php artisan migrate --seed`. If you have already executed the migration, simply use `php artisan db:seed`.
+- Locate a `user_id` in your database (e.g., 1, 2, etc.).
+- Make a GET request to: `http://127.0.0.1:8000/users/{user_id}/achievements`.
 
-Not necessary to run php artisan db:seed [1]
-
-Execute php artisan test
-
-Obs:
-[1] It's not needed to run db:seed since I'm using factories, but if youre running it:
-
-Please update this temp var to false:
-
-DatabaseSeeder -> SHOULD_ADD_TESTING_DATA = false;
-
-## To test the endpoint:
-Run php artisan migrate --seed to run the seeds with fake data.
-
-Check one user_id in your DB (You can use 1, 2 etc.).
-
-Make a GET request to: http://127.0.0.1:8000/users/{user_id}/achievements
+## Design Decisions
+- Tables `user_lesson_progress`, `user_comment_progress`, and `user_achievement_progress` have been created to streamline the retrieval of current progress data, thereby avoiding the need for repetitive `SELECT COUNT` queries.
 
 ## About This Test
+- The repository was structured following the specifications provided here: [Back-end Developer Test Specifications](https://ipsmedia.notion.site/ipsmedia/Back-end-Developer-Test-26cb7ae808204668a6ca3c408eaa6d4f).
 
-This repository has been made following the following test description: https://ipsmedia.notion.site/ipsmedia/Back-end-Developer-Test-26cb7ae808204668a6ca3c408eaa6d4f
-
-## Missing (if I had more time)
-
-- Would implement Cache to avoid making the same querie a bunch of times (Example: loading the "Beginner" badge row).
-- Would organize the tests better using Traits, and also implement more tests.
-- Would check if I could get a better performance on the User Achievements endpoints by making just one DB::select call.
+## Future Enhancements (Given More Time)
+- Implementation of caching to reduce repetitive queries, such as loading the "Beginner" badge details multiple times.
+- Improve the organization of the tests with the use of Traits, along with the addition of further test cases.
+- Exploration of performance optimizations for the User Achievements endpoint, possibly by reducing to a single `DB::select` call.
