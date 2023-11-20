@@ -7,6 +7,7 @@ use App\Events\BadgeUnlocked;
 use App\Models\Achievement;
 use App\Models\Badge;
 use App\Models\User;
+use App\Repositories\AchievementRepository;
 use App\Repositories\BadgeRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Collection;
@@ -17,16 +18,19 @@ class UserService {
     private UserRepository $userRepository;
     private UserAchievementProgressService $userAchievementProgressService;
     private BadgeRepository $badgeRepository;
+    private AchievementRepository $achievementRepository;
 
     public function __construct(
         UserRepository $userRepository,
         UserAchievementProgressService $userAchievementProgressService,
         BadgeRepository $badgeRepository,
+        AchievementRepository $achievementRepository
     )
     {
         $this->userRepository = $userRepository;
         $this->userAchievementProgressService = $userAchievementProgressService;
         $this->badgeRepository = $badgeRepository;
+        $this->achievementRepository = $achievementRepository;
     }
 
     public function handleUserNewAchievement(Achievement $userNewAchievement, User $user): void
@@ -70,8 +74,7 @@ class UserService {
 
         foreach ($userAchievementsGroupedByType as $type => $userAchievements) {
             $maxOrderAchievement = $userAchievements->max('order');
-            //@@TODO: Should move this query to AchievementRepository
-            $nextAvailableAchievement = Achievement::select('name')->where('type', $type)->where('order', $maxOrderAchievement + 1)->first();
+            $nextAvailableAchievement = $this->achievementRepository->findByTypeNextByOrder($type, $maxOrderAchievement);
 
             if ($nextAvailableAchievement) {
                 $nextAchievements[] = $nextAvailableAchievement->name;
