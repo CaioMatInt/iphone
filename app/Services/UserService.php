@@ -88,8 +88,10 @@ class UserService {
 
         return [
             'current_badge' => $currentBadge->name,
-            'next_badge' => $nextBadgeToUnlock->name,
-            'remaining_to_unlock_next_badge' => $nextBadgeToUnlock->achievement_threshold - $userAchievementsCount
+            'next_badge' => $nextBadgeToUnlock?->name,
+            'remaining_to_unlock_next_badge' => $nextBadgeToUnlock?
+                ($nextBadgeToUnlock->achievement_threshold - $userAchievementsCount)
+                : null,
         ];
     }
 

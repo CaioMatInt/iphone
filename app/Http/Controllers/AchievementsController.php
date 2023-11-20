@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 
 class AchievementsController extends Controller
 {
-
     private UserService $userService;
 
     public function __construct(UserService $userService)

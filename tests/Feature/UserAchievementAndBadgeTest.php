@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Events\BadgeUnlocked;
-use App\Events\CommentWritten;
 use App\Events\LessonWatched;
 use App\Events\UserCreated;
 use App\Listeners\AwardBeginnerBadgeToCreatedUser;
@@ -65,11 +64,11 @@ class UserAchievementAndBadgeTest extends TestCase
     private function setUpCommentAchievements(): void
     {
         $achievements = [
-            'oneCommentAchievement' => ['threshold' => 1, 'order' => 1],
-            'threeCommentsAchievement' => ['threshold' => 3, 'order' => 2],
-            'fiveCommentsAchievement' => ['threshold' => 5, 'order' => 3],
-            'tenCommentsAchievement' => ['threshold' => 10, 'order' => 4],
-            'twentyCommentsAchievement' => ['threshold' => 20, 'order' => 5]
+            'oneCommentAchievement' => ['threshold' => 1, 'order' => 1, 'name' => 'First Comment Written'],
+            'threeCommentsAchievement' => ['threshold' => 3, 'order' => 2, 'name' => '3 Comments Written'],
+            'fiveCommentsAchievement' => ['threshold' => 5, 'order' => 3, 'name' => '5 Comments Written'],
+            'tenCommentsAchievement' => ['threshold' => 10, 'order' => 4, 'name' => '10 Comments Written'],
+            'twentyCommentsAchievement' => ['threshold' => 20, 'order' => 5, 'name' => '20 Comments Written']
         ];
 
         foreach ($achievements as $varName => $details) {
@@ -77,6 +76,7 @@ class UserAchievementAndBadgeTest extends TestCase
                 'type' => Achievement::COMMENT_TYPE,
                 'threshold' => $details['threshold'],
                 'order' => $details['order'],
+                'name' => $details['name'],
             ]);
         }
 
@@ -93,11 +93,11 @@ class UserAchievementAndBadgeTest extends TestCase
     private function setUpLessonAchievements(): void
     {
         $achievements = [
-            'oneLessonWatchedAchievement' => ['threshold' => 1, 'order' => 1],
-            'fiveLessonsWatchedAchievement' => ['threshold' => 5, 'order' => 2],
-            'tenLessonsWatchedAchievement' => ['threshold' => 10, 'order' => 3],
-            'twentyFiveLessonsWatchedAchievement' => ['threshold' => 25, 'order' => 4],
-            'fiftyLessonsWatchedAchievement' => ['threshold' => 50, 'order' => 5]
+            'oneLessonWatchedAchievement' => ['threshold' => 1, 'order' => 1, 'name' => 'First Lesson Watched'],
+            'fiveLessonsWatchedAchievement' => ['threshold' => 5, 'order' => 2, 'name' => '5 Lessons Watched'],
+            'tenLessonsWatchedAchievement' => ['threshold' => 10, 'order' => 3, 'name' => '10 Lessons Watched'],
+            'twentyFiveLessonsWatchedAchievement' => ['threshold' => 25, 'order' => 4, 'name' => '25 Lessons Watched'],
+            'fiftyLessonsWatchedAchievement' => ['threshold' => 50, 'order' => 5, 'name' => '50 Lessons Watched']
         ];
 
         foreach ($achievements as $varName => $details) {
@@ -105,6 +105,7 @@ class UserAchievementAndBadgeTest extends TestCase
                 'type' => Achievement::LESSON_TYPE,
                 'threshold' => $details['threshold'],
                 'order' => $details['order'],
+                'name' => $details['name'],
             ]);
         }
 
@@ -583,5 +584,208 @@ class UserAchievementAndBadgeTest extends TestCase
                 'badge_id' => $badge->id,
             ]);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_200_when_requesting_user_achievements_and_user_id_is_valid(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_404_when_requesting_user_achievements_and_user_id_is_invalid(): void
+    {
+        $invalidUserId = User::max('id') + 1;
+        $response = $this->get("/users/{$invalidUserId}/achievements");
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_structure(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertJsonStructure([
+            'unlocked_achievements',
+            'next_available_achievements',
+            'current_badge',
+            'next_badge',
+            'remaining_to_unlock_next_badge'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_when_user_has_no_achievements(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertJson([
+            'unlocked_achievements' => [],
+            'next_available_achievements' => [],
+            'current_badge' => $this->beginnerBadge->name,
+            'next_badge' => $this->intermediateBadge->name,
+            'remaining_to_unlock_next_badge' => 4
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_when_user_has_one_lesson_and_one_comment()
+    {
+        $user = User::factory()->create();
+        $lesson = Lesson::factory()->create();
+        Comment::factory()->create(['user_id' => $user->id]);
+
+        $user->lessons()->attach($lesson->id, ['watched' => true]);
+
+        // Manually triggering LessonWatched here since I'm not supposed to implement it
+        // CommentWritten is being dispatched by Eloquent just for testing purposes
+        LessonWatched::dispatch($lesson, $user);
+
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertJson([
+            'unlocked_achievements' => [
+                $this->oneCommentAchievement->name,
+                $this->oneLessonWatchedAchievement->name,
+            ],
+            'next_available_achievements' => [
+                $this->threeCommentsAchievement->name,
+                $this->fiveLessonsWatchedAchievement->name,
+            ],
+            'current_badge' => $this->beginnerBadge->name,
+            'next_badge' => $this->intermediateBadge->name,
+            'remaining_to_unlock_next_badge' => 2
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_when_user_has_10_comments_and_5_lessons()
+    {
+        $user = User::factory()->create();
+        $lessons = Lesson::factory()->count(5)->create();
+        Comment::factory()->count(10)->create(['user_id' => $user->id]);
+
+        $user->lessons()->attach($lessons->pluck('id'), ['watched' => true]);
+
+        // Manually triggering LessonWatched here since I'm not supposed to implement it
+        // CommentWritten is being dispatched by Eloquent just for testing purposes
+        foreach ($lessons as $lesson) {
+            LessonWatched::dispatch($lesson, $user);
+        }
+
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertJson([
+            'unlocked_achievements' => [
+                $this->oneCommentAchievement->name,
+                $this->threeCommentsAchievement->name,
+                $this->fiveCommentsAchievement->name,
+                $this->tenCommentsAchievement->name,
+                $this->oneLessonWatchedAchievement->name,
+                $this->fiveLessonsWatchedAchievement->name,
+            ],
+            'next_available_achievements' => [
+                $this->twentyCommentsAchievement->name,
+                $this->tenLessonsWatchedAchievement->name,
+            ],
+            'current_badge' => $this->intermediateBadge->name,
+            'next_badge' => $this->advancedBadge->name,
+            'remaining_to_unlock_next_badge' => 2
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_when_user_has_20_comments_and_10_lessons() {
+        $user = User::factory()->create();
+        $lessons = Lesson::factory()->count(10)->create();
+        Comment::factory()->count(20)->create(['user_id' => $user->id]);
+
+        $user->lessons()->attach($lessons->pluck('id'), ['watched' => true]);
+
+        // Manually triggering LessonWatched here since I'm not supposed to implement it
+        // CommentWritten is being dispatched by Eloquent just for testing purposes
+        foreach ($lessons as $lesson) {
+            LessonWatched::dispatch($lesson, $user);
+        }
+
+        $response = $this->get("/users/{$user->id}/achievements");
+
+        $response->assertJson([
+            'unlocked_achievements' => [
+                $this->oneCommentAchievement->name,
+                $this->threeCommentsAchievement->name,
+                $this->fiveCommentsAchievement->name,
+                $this->tenCommentsAchievement->name,
+                $this->twentyCommentsAchievement->name,
+                $this->oneLessonWatchedAchievement->name,
+                $this->fiveLessonsWatchedAchievement->name,
+                $this->tenLessonsWatchedAchievement->name,
+            ],
+            'next_available_achievements' => [
+                $this->twentyFiveLessonsWatchedAchievement->name,
+            ],
+            'current_badge' => $this->advancedBadge->name,
+            'next_badge' => $this->masterBadge->name,
+            'remaining_to_unlock_next_badge' => 2
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_user_achievements_response_when_user_has_20_comments_and_50_lessons() {
+        $user = User::factory()->create();
+        $lessons = Lesson::factory()->count(50)->create();
+        Comment::factory()->count(20)->create(['user_id' => $user->id]);
+
+        $user->lessons()->attach($lessons->pluck('id'), ['watched' => true]);
+
+        // Manually triggering LessonWatched here since I'm not supposed to implement it
+        // CommentWritten is being dispatched by Eloquent just for testing purposes
+        foreach ($lessons as $lesson) {
+            LessonWatched::dispatch($lesson, $user);
+        }
+
+        $response = $this->get("/users/{$user->id}/achievements");
+        
+        $response->assertJson([
+            'unlocked_achievements' => [
+                $this->oneCommentAchievement->name,
+                $this->threeCommentsAchievement->name,
+                $this->fiveCommentsAchievement->name,
+                $this->tenCommentsAchievement->name,
+                $this->twentyCommentsAchievement->name,
+                $this->oneLessonWatchedAchievement->name,
+                $this->fiveLessonsWatchedAchievement->name,
+                $this->tenLessonsWatchedAchievement->name,
+                $this->twentyFiveLessonsWatchedAchievement->name,
+                $this->fiftyLessonsWatchedAchievement->name,
+            ],
+            'next_available_achievements' => [],
+            'current_badge' => $this->masterBadge->name,
+            'next_badge' => null,
+            'remaining_to_unlock_next_badge' => null
+        ]);
     }
 }
