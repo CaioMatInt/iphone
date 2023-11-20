@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class UserAchievementAndBadgeTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -41,10 +41,6 @@ class ExampleTest extends TestCase
     private Achievement $twentyFiveLessonsWatchedAchievement;
     private Achievement $fiftyLessonsWatchedAchievement;
     private array $allLessonAchievements;
-
-    /*run db:seed*/
-    /*nome da tabela*/
-    /*trtansaction*/
 
     protected function setUp(): void
     {
@@ -119,18 +115,6 @@ class ExampleTest extends TestCase
             $this->twentyFiveLessonsWatchedAchievement,
             $this->fiftyLessonsWatchedAchievement
         ];
-    }
-
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
-    {
-        /*$user = User::factory()->create();
-
-        $response = $this->get("/users/{$user->id}/achievements");
-
-        $response->assertStatus(200);*/
     }
 
     /**

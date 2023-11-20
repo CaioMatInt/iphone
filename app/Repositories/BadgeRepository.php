@@ -17,4 +17,9 @@ class BadgeRepository
     {
         return $this->model->where('achievement_threshold', $threshold)->first();
     }
+
+    public function findBadgeByName(string $name): ?Badge
+    {
+        return $this->model->where('name', $name)->first();
+    }
 }

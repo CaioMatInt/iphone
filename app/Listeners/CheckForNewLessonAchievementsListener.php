@@ -38,17 +38,12 @@ class CheckForNewLessonAchievementsListener
      */
     public function handle(LessonWatched $event): void
     {
-        $user = $event->user;
-        $lesson = $event->lesson;
-
-        $this->userRepository->attachWatchedLesson($user, $lesson->id, true);
-
-        $userLessonProgress = $this->userLessonProgressService->createOrUpdateUserLessonProgress($user->id);
+        $userLessonProgress = $this->userLessonProgressService->createOrUpdateUserLessonProgress($event->user->id);
 
         $userNewAchievement = $this->achievementRepository->findByTypeAndThreshold(Achievement::LESSON_TYPE, $userLessonProgress->count);
 
         if ($userNewAchievement) {
-            $this->userService->handleUserNewAchievement($userNewAchievement, $user);
+            $this->userService->handleUserNewAchievement($userNewAchievement, $event->user);
         }
     }
 }

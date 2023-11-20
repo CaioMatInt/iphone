@@ -12,8 +12,6 @@ use App\Services\UserService;
 
 class CheckForNewCommentAchievementsListener
 {
-
-    private UserRepository $userRepository;
     private UserCommentProgressService $userCommentProgressService;
     private AchievementRepository $achievementRepository;
     private UserService $userService;
@@ -22,13 +20,11 @@ class CheckForNewCommentAchievementsListener
      * Create the event listener.
      */
     public function __construct(
-        UserRepository $userRepository,
         UserCommentProgressService $userCommentProgressService,
         AchievementRepository $achievementRepository,
         UserService $userService,
     )
     {
-        $this->userRepository = $userRepository;
         $this->userCommentProgressService = $userCommentProgressService;
         $this->achievementRepository = $achievementRepository;
         $this->userService = $userService;
