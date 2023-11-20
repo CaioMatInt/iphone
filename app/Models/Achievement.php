@@ -9,6 +9,9 @@ class Achievement extends Model
 {
     use HasFactory;
 
+    const LESSON = 'lesson';
+    const COMMENT = 'comment';
+
     /**
      * The attributes that are mass assignable.
      *

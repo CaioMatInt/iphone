@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('badges', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('achievement_threshold');
-            $table->integer('order');
+            $table->integer('achievement_threshold')->unique();
+            $table->integer('order')->unique();
             $table->timestamps();
         });
     }
