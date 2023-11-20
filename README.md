@@ -4,7 +4,7 @@
 3. Update your `.env` file with the appropriate database credentials and keys.
 
 ## Running PHPUnit Tests
-- Perform a fresh migration using `php artisan migrate:fresh` if you already run db:seed.
+- Perform a fresh migration with `php artisan migrate:fresh` if you have previously run php artisan db:seed. In the other case, just run `php artisan migrate`.
 - Run tests with `php artisan test`.
 
 - Note: There is no need to seed the database (`php artisan db:seed`) as factories are utilized. However, should you choose to do so, set `SHOULD_ADD_TESTING_DATA` to `false` in `DatabaseSeeder`.
