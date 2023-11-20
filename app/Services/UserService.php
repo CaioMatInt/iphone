@@ -70,7 +70,7 @@ class UserService {
 
         foreach ($userAchievementsGroupedByType as $type => $userAchievements) {
             $maxOrderAchievement = $userAchievements->max('order');
-            //mover pra repo
+            //@@TODO: Should move this query to AchievementRepository
             $nextAvailableAchievement = Achievement::select('name')->where('type', $type)->where('order', $maxOrderAchievement + 1)->first();
 
             if ($nextAvailableAchievement) {
