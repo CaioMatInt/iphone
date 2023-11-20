@@ -33,7 +33,5 @@ This repository has been made following the following test description: https://
 ## Missing (if I had more time)
 
 - Would implement Cache to avoid making the same querie a bunch of times (Example: loading the "Beginner" badge row).
-- 
 - Would organize the tests better using Traits, and also implement more tests.
-- 
 - Would check if I could get a better performance on the User Achievements endpoints by making just one DB::select call.
