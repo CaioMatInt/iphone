@@ -1,3 +1,7 @@
+## About This Test
+- The repository was structured following the specifications provided here: [Back-end Developer Test Specifications](https://ipsmedia.notion.site/ipsmedia/Back-end-Developer-Test-26cb7ae808204668a6ca3c408eaa6d4f).
+- Some classes were imported from the test instructions, hence they were not defined by the repo's owner.
+  
 ## Setup
 1. Clone the repository.
 2. Execute `composer install` to install dependencies.
@@ -16,9 +20,6 @@
 
 ## Design Decisions
 - Tables `user_lesson_progress`, `user_comment_progress`, and `user_achievement_progress` have been created to streamline the retrieval of current progress data, thereby avoiding the need for repetitive `SELECT COUNT` queries.
-
-## About This Test
-- The repository was structured following the specifications provided here: [Back-end Developer Test Specifications](https://ipsmedia.notion.site/ipsmedia/Back-end-Developer-Test-26cb7ae808204668a6ca3c408eaa6d4f).
 
 ## Future Enhancements (Given More Time)
 - Implementation of caching to reduce repetitive queries, such as loading the "Beginner" badge details multiple times.
