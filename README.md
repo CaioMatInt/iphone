@@ -1,5 +1,6 @@
 ## ATTENTION
 I've made this code in ten hours. It needs to be refactored. Also, it's breaking the repository pattern in one or two places.
+There's also repeated code that must be refactored.
 
 ## About This Test
 - The repository was structured following the specifications provided here: [Back-end Developer Test Specifications](https://ipsmedia.notion.site/ipsmedia/Back-end-Developer-Test-26cb7ae808204668a6ca3c408eaa6d4f).
